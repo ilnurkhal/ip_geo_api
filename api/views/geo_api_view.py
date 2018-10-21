@@ -23,6 +23,10 @@ async def root(request):
 @bp.route('/getdata/<host>/')
 async def ip_info(request, host):
     api_resp = ip_check_in(host)
+    api_resp = {
+        x:api_resp[x] for x in api_resp
+        if x not in settings.sanic_app.get('unnecessary_fields')
+        }
     return response.json(api_resp)
 
 def ip_check_in(ip):

@@ -14,6 +14,7 @@ import settings
 
 def build_ip_data(data_lang=os.environ.get('data_lang') or 'en'):    
     archive = requests.get(settings.base_gen.get('data_url'))
+
     with zipfile.ZipFile(io.BytesIO(archive.content)) as ziped_data:
         zip_name = ziped_data.namelist()[0].split('/')[0]
         
@@ -31,6 +32,7 @@ def build_ip_data(data_lang=os.environ.get('data_lang') or 'en'):
             ip_blocks = []
             for x in city_blocks:
                 ip_data = dict(itertools.zip_longest(city_blocks_fields, x))
+                ip_data = {x:ip_data[x] for x in ip_data if ip_data[x]}
                 ip_blocks.append(
                     ip_data
                 )
@@ -51,10 +53,13 @@ def build_ip_data(data_lang=os.environ.get('data_lang') or 'en'):
             cl = {}
             for x in city_locations:
                 city_data = dict(itertools.zip_longest(fields, x))
+                city_data = {
+                    x:city_data[x] for x in city_data if city_data[x]
+                    }
                 cl[city_data['geoname_id']] = city_data
 
     for i in ip_blocks:
-        if cl.get(i['geoname_id']):
+        if cl.get(i.get('geoname_id')):
             i.update(cl.get(i['geoname_id']))
     del cl
 
