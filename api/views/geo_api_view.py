@@ -22,25 +22,36 @@ async def root(request):
 
 @bp.route('/getdata/<host>/')
 async def ip_info(request, host):
-    api_resp = ip_check_in(host)
-    api_resp = {
-        x:api_resp[x] for x in api_resp
+    return response.json(get_host_inf(host))
+
+@bp.route('/selfcheck/')
+async def ip_selfcheck(request):
+    return response.json(get_host_inf(request.ip))
+    #return response.json(request.ip)
+
+def get_host_inf(host):
+    inf = ip_check_in(host)
+    inf = {
+        x:inf[x] for x in inf
         if x not in settings.sanic_app.get('unnecessary_fields')
         }
-    return response.json(api_resp)
+    return inf
 
 def ip_check_in(ip):
     ia = ipaddress.ip_address(socket.gethostbyname(ip))
-    octets = str(ia).split('.')[:-1]
-    a = tree
-    for octet in octets:
-        if a.get(octet):
-            a = a[octet]
-            cidrs = a['cidrs']
+    if ia.is_global:
+        octets = str(ia).split('.')[:-1]
+        a = tree
+        for octet in octets:
+            if a.get(octet):
+                a = a[octet]
+                cidrs = a['cidrs']
 
-    for block in cidrs:
-        if ia in ipaddress.ip_network(block['network']):
-            return block
+        for block in cidrs:
+            if ia in ipaddress.ip_network(block['network']):
+                return block
+    else:
+        return {str(ia): "Isn't global address"}
 
 
 if not os.path.isfile(settings.sanic_app['data_file']):
