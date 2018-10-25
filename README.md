@@ -4,11 +4,11 @@ Ip_geo_api helps you to get information based on an ip address or hostname:
 
 ### For quick start:
 
-> docker run -dit --name geoapi -p 8080:8080 h1dw0w/ip_geo_api
+> docker run -d --name geoapi -p 8080:8080 h1dw0w/ip_geo_api
 
 or you can set specific data language as environment variable:
 
-> docker run -dit --name geoapi -e "data_lang=ru" -p 8080:8080 h1dw0w/ip_geo_api
+> docker run -d --name geoapi -e "data_lang=ru" -p 8080:8080 h1dw0w/ip_geo_api
 
 (data_lang can be: de, en, es, fr, ja, pt-BR, ru, zh-CN ), **default data_lang is "en"**
 
